@@ -35,10 +35,10 @@ public enum FileType: String {
 }
 
 public enum BackupStatus: String {
-    case excluded = "🔘"
-    case included = "🔵"
-    case failure = "🟠"
-    case unknown = "🟡"
+    case excluded = "∅"
+    case included = "✪"
+    case failure = "⧮"
+    case unknown = "⍰"
 }
 
 public struct FileItem {
@@ -312,11 +312,7 @@ extension FileListViewController: UITableViewDelegate, UITableViewDataSource {
         if cell == nil { cell = FileCell(style: .subtitle, reuseIdentifier: Misc.cellIdentifier) }
 
         let item = items[indexPath.row]
-        if options.contains(.backupDisplay) {
-            cell?.textLabel?.text = item.backupStatus.rawValue + item.name
-        } else {
-            cell?.textLabel?.text = item.name
-        }
+        cell?.textLabel?.text = item.name
 
         cell?.imageView?.image = item.image
         var detailText = DateFormatter.localizedString(from: item.modificationDate,
@@ -324,6 +320,10 @@ extension FileListViewController: UITableViewDelegate, UITableViewDataSource {
                                                        timeStyle: .medium)
         if options.contains(.fileSizeDisplay) {
             detailText += " | " + item.sizeString
+        }
+
+        if options.contains(.backupDisplay) {
+            detailText = item.backupStatus.rawValue + "\u{2009}" + detailText
         }
 
         cell?.detailTextLabel?.text = detailText
