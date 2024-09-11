@@ -39,15 +39,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     
     public func enableSwipe() {
-        let pan = UISwipeGestureRecognizer(target: self, action: #selector(onSwipeDetected))
-        pan.numberOfTouchesRequired = 1
-        pan.direction = .left
-        UIApplication.shared.keyWindow?.addGestureRecognizer(pan)
+        let simpleBrowser = UISwipeGestureRecognizer(target: self, action: #selector(startSimpleBrowser))
+        simpleBrowser.numberOfTouchesRequired = 1
+        simpleBrowser.direction = .left
+        simpleBrowser.name = "swipe"
+        UIApplication.shared.keyWindow?.addGestureRecognizer(simpleBrowser)
+        let allOptionsBrowser = UISwipeGestureRecognizer(target: self, action: #selector(startAllOptionsBrowser))
+        allOptionsBrowser.numberOfTouchesRequired = 1
+        allOptionsBrowser.direction = .right
+        allOptionsBrowser.name = "swipe"
+        UIApplication.shared.keyWindow?.addGestureRecognizer(allOptionsBrowser)
+
     }
     
-    @objc func onSwipeDetected(){
-        
+    @objc func startSimpleBrowser(){
+        guard window?.rootViewController?.presentedViewController == nil else {
+            return // this means browser is already being presented
+        }
         let sandboxBrowser = SandboxBrowser()
+        presentSandboxBrowser(sandboxBrowser)
+    }
+
+    @objc func startAllOptionsBrowser(){
+        guard window?.rootViewController?.presentedViewController == nil else {
+            return // this means browser is already being presented
+        }
+        let sandboxBrowser = SandboxBrowser(
+            initialPath: URL(fileURLWithPath: NSHomeDirectory()),
+            options: SandboxBrowser.Options.allCases
+        )
+        presentSandboxBrowser(sandboxBrowser)
+    }
+
+    func presentSandboxBrowser(_ sandboxBrowser: SandboxBrowser) {
         sandboxBrowser.didSelectFile = { file, vc in
             print(file.name, file.type)
         }
